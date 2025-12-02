@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Item</title>
+
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .hidden { display: none; }
+    </style>
+
+    <script src="/security.js"></script>
+</head>
+<body>
+
+<h1>Add Item</h1>
+
+<form action="/vault/add" method="post">
+
+    <label>Label:</label><br>
+    <input type="text" name="label" required><br><br>
+
+    <label>Type:</label><br>
+    <select id="categorySelect" name="category" onchange="showFields()" required>
+        <option disabled selected>Select</option>
+        <option>Login</option>
+        <option>Credit Card</option>
+        <option>Identity</option>
+        <option>Secure Notes</option>
+    </select>
+    <br><br>
+
+    <!-- LOGIN -->
+    <div id="loginFields" class="hidden">
+        <label>Username:</label><br>
+        <input name="username"><br><br>
+
+        <label>Password:</label><br>
+        <input name="password"><br><br>
+
+        <label>URL:</label><br>
+        <input name="url"><br><br>
+    </div>
+
+    <!-- CARD -->
+    <div id="cardFields" class="hidden">
+        <label>Card Number:</label><br>
+        <input name="cardNumber"><br><br>
+
+        <label>CVV:</label><br>
+        <input name="cvv"><br><br>
+
+        <label>Expiry:</label><br>
+        <input name="expiry"><br><br>
+    </div>
+
+    <!-- IDENTITY -->
+    <div id="idFields" class="hidden">
+        <label>Full Name:</label><br>
+        <input name="fullName"><br><br>
+
+        <label>Date of Birth:</label><br>
+        <input name="dob" type="date"><br><br>
+    </div>
+
+    <!-- NOTES -->
+    <div id="noteFields" class="hidden">
+        <label>Secure Notes:</label><br>
+        <textarea name="notes" rows="6" style="width:300px"></textarea>
+    </div>
+
+    <br>
+    <button type="submit">Save</button>
+</form>
+
+<br>
+<a href="/dashboard">Back</a>
+
+<script>
+function showFields() {
+    const type = document.getElementById("categorySelect").value;
+
+    document.getElementById("loginFields").classList.add("hidden");
+    document.getElementById("cardFields").classList.add("hidden");
+    document.getElementById("idFields").classList.add("hidden");
+    document.getElementById("noteFields").classList.add("hidden");
+
+    if (type === "Login") document.getElementById("loginFields").classList.remove("hidden");
+    if (type === "Credit Card") document.getElementById("cardFields").classList.remove("hidden");
+    if (type === "Identity") document.getElementById("idFields").classList.remove("hidden");
+    if (type === "Secure Notes") document.getElementById("noteFields").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>

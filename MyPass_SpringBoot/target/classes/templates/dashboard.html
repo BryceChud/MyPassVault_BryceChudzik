@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+
+        .search-box {
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .badge-login { background-color: #007bff; }
+        .badge-card  { background-color: #28a745; }
+        .badge-id    { background-color: #6f42c1; }
+        .badge-note  { background-color: #fd7e14; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover { background: #f5f5f5; }
+
+        .actions a {
+            margin-right: 12px;
+            text-decoration: none;
+        }
+
+        .toggle-btn, .copy-btn {
+            margin-left: 8px;
+            padding: 3px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        // Show/Hide password
+        function togglePassword(id) {
+            const span = document.getElementById("pass-" + id);
+            const real = document.getElementById("realpass-" + id).value;
+
+            if (span.innerText === "••••••••") {
+                span.innerText = real;
+            } else {
+                span.innerText = "••••••••";
+            }
+        }
+
+        // Copy password
+        function copyPassword(id) {
+            const real = document.getElementById("realpass-" + id).value;
+            navigator.clipboard.writeText(real);
+            alert("Password copied!");
+        }
+
+        // Live search
+        function searchTable() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll("#vaultTable tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                const label = rows[i].cells[1].innerText.toLowerCase();
+                const username = rows[i].cells[2].innerText.toLowerCase();
+
+                rows[i].style.display = (label.includes(input) || username.includes(input))
+                    ? ""
+                    : "none";
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<h1>Your Vault</h1>
+
+<a href="/vault/add">➕ Add New Item</a>
+<br><br>
+
+<!-- SEARCH BAR -->
+<input 
+    type="text" 
+    id="searchInput" 
+    class="search-box"
+    placeholder="Search by label or username..." 
+    onkeyup="searchTable()"
+    style="width: 300px; padding: 8px;"
+>
+
+<table id="vaultTable">
+    <tr>
+        <th>Type</th>
+        <th>Label</th>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Actions</th>
+    </tr>
+
+    <tr th:each="item : ${items}">
+
+        <!-- CATEGORY BADGE -->
+        <td>
+            <span th:switch="${item.category}">
+                <span th:case="'Login'" class="badge badge-login">🔐 Login</span>
+                <span th:case="'Credit Card'" class="badge badge-card">💳 Card</span>
+                <span th:case="'Identity'" class="badge badge-id">🪪 Identity</span>
+                <span th:case="'Secure Notes'" class="badge badge-note">📝 Notes</span>
+            </span>
+        </td>
+
+        <td th:text="${item.label}"></td>
+        <td th:text="${item.username}"></td>
+
+        <!-- HIDDEN REAL PASSWORD VALUE (required for show/copy) -->
+        <input type="hidden"
+               th:id="'realpass-' + ${item.id}"
+               th:value="${item.password}" />
+
+        <!-- PASSWORD CELL -->
+        <td>
+            <span th:id="'pass-' + ${item.id}">••••••••</span>
+
+            <button class="toggle-btn"
+                    th:attr="onclick=|togglePassword('${item.id}')|">
+                Show
+            </button>
+
+            <button class="copy-btn"
+                    th:attr="onclick=|copyPassword('${item.id}')|">
+                Copy
+            </button>
+        </td>
+
+        <td class="actions">
+            <a th:href="@{'/vault/edit/' + ${item.id}}">✏️ Edit</a>
+            <a th:href="@{'/vault/delete/' + ${item.id}}"
+               onclick="return confirm('Delete this item?')">
+               🗑 Delete
+            </a>
+        </td>
+    </tr>
+</table>
+
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+</html>

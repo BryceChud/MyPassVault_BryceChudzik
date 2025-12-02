@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        #strengthText {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Create Account</h1>
+
+<form action="/register" method="post">
+
+    <label>Email:</label>
+    <input type="text" name="email" required>
+    <br><br>
+
+    <label>Password:</label>
+    <input type="password"
+           id="passwordField"
+           name="password"
+           required
+           onkeyup="updateStrengthMeter('passwordField','strengthText')">
+
+    <button type="button" onclick="generatePassword()">Generate Strong Password</button>
+
+    <span id="strengthText"></span>
+
+    <br><br>
+
+    <label>Security Question #1:</label>
+    <input type="text" name="security1" required><br><br>
+
+    <label>Security Question #2:</label>
+    <input type="text" name="security2" required><br><br>
+
+    <label>Security Question #3:</label>
+    <input type="text" name="security3" required><br><br>
+
+    <button type="submit">Register</button>
+</form>
+
+<a href="/login">Back to login</a>
+
+
+<script>
+// ---------------- Password Strength Checker ----------------
+function checkStrength(password) {
+    let strength = 0;
+
+    if (password.length >= 6) strength++;
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+    return strength;
+}
+
+function updateStrengthMeter(inputId, meterId) {
+    const password = document.getElementById(inputId).value;
+    const meter = document.getElementById(meterId);
+    const strength = checkStrength(password);
+
+    if (strength <= 1) {
+        meter.innerText = "Weak";
+        meter.style.color = "red";
+    } else if (strength <= 3) {
+        meter.innerText = "Medium";
+        meter.style.color = "orange";
+    } else {
+        meter.innerText = "Strong";
+        meter.style.color = "green";
+    }
+}
+
+// ---------------- Strong Password Generator ----------------
+function generatePassword() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}";
+    let pass = "";
+
+    for (let i = 0; i < 16; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    // Fill into password field
+    const field = document.getElementById("passwordField");
+    field.value = pass;
+
+    // Update strength meter
+    updateStrengthMeter("passwordField", "strengthText");
+
+    alert("Strong password generated!");
+}
+</script>
+
+</body>
+</html>
